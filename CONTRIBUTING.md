@@ -135,6 +135,35 @@ the extension to `SUPPORTED_EXTENSIONS`, write a parser that produces
 - A behaviour change needs a test that fails without it.
 - Update `CHANGELOG.md` under an `Unreleased` heading.
 
+## Cutting a release
+
+Releases are driven by tags. Pushing `v<version>` runs the full gate, creates
+a GitHub release with the VSIX attached, and publishes to the Marketplace.
+
+1. Bump `version` in `package.json`.
+2. Add a matching `## <version>` section to `CHANGELOG.md` — the release notes
+   are extracted from it, and the workflow fails if it is missing or empty.
+   Notes written twice drift; the changelog is the source of truth.
+3. Commit, then tag and push:
+
+   ```bash
+   git tag v0.3.0
+   git push origin v0.3.0
+   ```
+
+The workflow refuses to run if the tag and `package.json` disagree. That check
+exists because **a published version number can never be reused** — get it
+wrong and that number is burnt on the Marketplace forever.
+
+To rehearse without publishing anything, run the **Release** workflow manually
+from the Actions tab with `dry_run` checked: it builds, verifies and packages,
+then stops.
+
+Publishing requires a repository secret named `VSCE_PAT` — an Azure DevOps
+Personal Access Token scoped to **Marketplace > Manage**, created against *all
+accessible organizations*. The workflow fails with an explicit message if it
+is missing, rather than halfway through.
+
 ## Reporting a security issue
 
 StyleSeek runs entirely locally, makes no network calls and executes nothing
