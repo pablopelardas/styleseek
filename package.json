@@ -3,7 +3,7 @@
   "displayName": "StyleSeek",
   "description": "Smart CSS/SCSS selector search. Finds nested BEM selectors that do not exist literally in your source.",
   "version": "0.2.1",
-  "publisher": "local-dev",
+  "publisher": "pablopelardas",
   "license": "MIT",
   "icon": "media/icon.png",
   "galleryBanner": {
