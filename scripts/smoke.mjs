@@ -275,6 +275,21 @@ assert.ok(
 quickPick.hide();
 await second;
 
+// The status breakdown must reach the output channel, not a notification
+// `detail` (which VS Code only renders on modal dialogs and otherwise drops).
+log.length = 0;
+await registeredCommands.get('styleseek.showIndexStatus')();
+for (const field of ['State', 'Files indexed', 'Selectors found', 'Parse errors', 'Last full index']) {
+  assert.ok(
+    log.some((line) => line.includes(field)),
+    `index status must report "${field}", log was ${JSON.stringify(log)}`,
+  );
+}
+assert.ok(
+  log.some((line) => line.startsWith('info: StyleSeek — ') && line.includes('selectors in')),
+  'index status must also show a headline notification',
+);
+
 subscriptions.forEach((item) => item.dispose?.());
 Module._load = originalLoad;
 
