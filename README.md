@@ -199,7 +199,7 @@ StyleSeek is fully local and does exactly nothing else:
 ## Try it
 
 A playground workspace with every supported and every deliberately-unsupported
-case lives in [`examples/playground`](examples/playground). Open it as its own
+case lives in `examples/playground`. Open it as its own
 window and work through its checklist:
 
 ```bash
