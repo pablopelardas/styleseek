@@ -1,0 +1,143 @@
+// Every hard case the parser is supposed to get right.
+// Open StyleSeek and check each comment against what you actually see.
+
+// --- descendant vs concatenation -----------------------------------------
+// Expect `.container .button`, NOT `.container.button`.
+.container {
+  .button {
+    color: red;
+  }
+}
+
+// --- combinators ----------------------------------------------------------
+// Expect: .list, .list > .item, .list + .after, .list ~ .later
+.list {
+  > .item {
+    color: red;
+  }
+
+  + .after {
+    color: red;
+  }
+
+  ~ .later {
+    color: red;
+  }
+}
+
+// --- selector lists -------------------------------------------------------
+// Expect TWO entries, each jumping to its own line.
+.card {
+  &__title,
+  &__subtitle {
+    color: white;
+  }
+}
+
+// --- parent lists (cartesian product) -------------------------------------
+// Expect: .alpha__x, .beta__x, .alpha__y, .beta__y
+.alpha,
+.beta {
+  &__x,
+  &__y {
+    color: red;
+  }
+}
+
+// --- pseudo-classes -------------------------------------------------------
+// Hidden by default. Turn on `styleseek.includePseudoClasses` to see them.
+// The comma inside :not() must NOT split the selector list.
+.button {
+  &:hover {
+    color: blue;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:not(.disabled, .loading) {
+    color: green;
+  }
+}
+
+// --- attribute selectors with a comma inside ------------------------------
+// Expect ONE entry: .input[data-kind="a,b"]
+.input {
+  &[data-kind="a,b"] {
+    color: red;
+  }
+}
+
+// --- multiple & in one selector -------------------------------------------
+// Expect: .page .theme-dark  and  .theme-dark + .theme-dark
+.theme-dark {
+  .page & {
+    color: red;
+  }
+
+  & + & {
+    margin: 0;
+  }
+}
+
+// --- at-rules are transparent to the nesting context ----------------------
+// Expect .panel__body and .panel__grid, NOT something media-prefixed.
+.panel {
+  @media (min-width: 600px) {
+    &__body {
+      color: red;
+    }
+  }
+
+  @supports (display: grid) {
+    &__grid {
+      display: grid;
+    }
+  }
+}
+
+// --- @at-root resolves against the document root --------------------------
+// Expect .escaped and .escaped__child, NOT .wrapper .escaped
+.wrapper {
+  @at-root .escaped {
+    &__child {
+      color: red;
+    }
+  }
+}
+
+// --- @keyframes steps are NOT selectors -----------------------------------
+// `0%`, `from` and `to` must never appear in the results.
+@keyframes spin {
+  0% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+// --- @mixin: & has no statically known parent -----------------------------
+// `&__shadow` is skipped on purpose (we refuse to guess).
+// `.plain-inside-mixin` IS indexed, because it is a literal selector.
+@mixin elevated {
+  &__shadow {
+    box-shadow: 0 0 1px;
+  }
+
+  .plain-inside-mixin {
+    color: red;
+  }
+}
+
+// --- Sass interpolation ---------------------------------------------------
+// Kept literal, never resolved. Findable by its static part: `-button`.
+$prefix: 'app';
+
+.#{$prefix}-button {
+  &__icon {
+    color: red;
+  }
+}

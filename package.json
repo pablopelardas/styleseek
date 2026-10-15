@@ -1,0 +1,176 @@
+{
+  "name": "styleseek",
+  "displayName": "StyleSeek",
+  "description": "Smart CSS/SCSS selector search. Finds nested BEM selectors that do not exist literally in your source.",
+  "version": "0.1.0",
+  "publisher": "local-dev",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "vscode": "^1.85.0",
+    "node": ">=18"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "scss",
+    "sass",
+    "css",
+    "bem",
+    "vue",
+    "selector",
+    "search"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:scss",
+    "onLanguage:css",
+    "onLanguage:vue",
+    "onLanguage:html"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "styleseek.searchSelector",
+        "title": "Search Selector",
+        "category": "StyleSeek"
+      },
+      {
+        "command": "styleseek.findSelectedSelector",
+        "title": "Find Selected Selector",
+        "category": "StyleSeek"
+      },
+      {
+        "command": "styleseek.goToDefinition",
+        "title": "Go to Definition",
+        "category": "StyleSeek"
+      },
+      {
+        "command": "styleseek.rebuildIndex",
+        "title": "Rebuild Index",
+        "category": "StyleSeek"
+      },
+      {
+        "command": "styleseek.showIndexStatus",
+        "title": "Show Index Status",
+        "category": "StyleSeek"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "styleseek.searchSelector",
+        "key": "ctrl+alt+f",
+        "mac": "cmd+alt+f"
+      },
+      {
+        "command": "styleseek.findSelectedSelector",
+        "key": "ctrl+alt+s",
+        "mac": "cmd+alt+s",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "StyleSeek",
+      "properties": {
+        "styleseek.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable StyleSeek indexing and search."
+        },
+        "styleseek.include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/*.scss",
+            "**/*.css",
+            "**/*.vue"
+          ],
+          "description": "Glob patterns of files to index."
+        },
+        "styleseek.exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/node_modules/**",
+            "**/.git/**",
+            "**/dist/**",
+            "**/build/**",
+            "**/coverage/**",
+            "**/.next/**",
+            "**/.nuxt/**"
+          ],
+          "description": "Glob patterns to exclude from indexing."
+        },
+        "styleseek.respectSearchExclude": {
+          "type": "boolean",
+          "default": true,
+          "description": "Also honour the `files.exclude` and `search.exclude` settings."
+        },
+        "styleseek.maxResults": {
+          "type": "number",
+          "default": 100,
+          "minimum": 1,
+          "maximum": 5000,
+          "description": "Maximum number of results shown in the quick pick."
+        },
+        "styleseek.enableFuzzySearch": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable fuzzy matching when no literal match is found."
+        },
+        "styleseek.includePseudoClasses": {
+          "type": "boolean",
+          "default": false,
+          "description": "Index selectors that end in a pseudo-class or pseudo-element (e.g. `.button:hover`)."
+        },
+        "styleseek.prioritizeActiveFile": {
+          "type": "boolean",
+          "default": true,
+          "description": "Boost results that live in the currently active editor."
+        },
+        "styleseek.indexDebounceMs": {
+          "type": "number",
+          "default": 250,
+          "minimum": 0,
+          "maximum": 5000,
+          "description": "Debounce applied to unsaved document changes before reindexing."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run check-types && npm run build",
+    "build": "node esbuild.mjs --production",
+    "watch": "node esbuild.mjs --watch",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src tests",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "package": "vsce package --no-dependencies --allow-missing-repository -o styleseek.vsix",
+    "smoke": "npm run build && node scripts/smoke.mjs",
+    "verify": "npm run check-types && npm run lint && npm test && npm run smoke"
+  },
+  "dependencies": {
+    "@vue/compiler-sfc": "^3.5.13",
+    "postcss": "^8.5.3",
+    "postcss-scss": "^4.0.9",
+    "postcss-selector-parser": "^7.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^8.24.0",
+    "@typescript-eslint/parser": "^8.24.0",
+    "@vscode/vsce": "^3.2.2",
+    "esbuild": "^0.25.0",
+    "eslint": "^9.20.0",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5"
+  }
+}

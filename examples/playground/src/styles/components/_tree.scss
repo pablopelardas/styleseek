@@ -1,0 +1,22 @@
+// The canonical acceptance fixture from the spec.
+// Nothing here contains the literal text `.org-tree__controls`.
+
+.org-tree {
+  display: flex;
+
+  &__header {
+    height: 40px;
+  }
+
+  &__controls {
+    display: flex;
+
+    &-button {
+      cursor: pointer;
+
+      &:hover {
+        color: red;
+      }
+    }
+  }
+}
