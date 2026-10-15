@@ -54,6 +54,34 @@ export class WorkspaceIndexer implements vscode.Disposable, IndexEngineHost {
     return this.engine.isReady;
   }
 
+  /**
+   * Per-folder counts.
+   *
+   * Without this, "why does the count differ from last time?" is unanswerable
+   * — a multi-root workspace or a second window looks identical in a single
+   * total. Files outside every folder are grouped under `(outside workspace)`
+   * so a stray `<style src>` target can never hide.
+   */
+  get folderBreakdown(): Array<{ label: string; files: number; selectors: number }> {
+    const buckets = new Map<string, { files: Set<string>; selectors: number }>();
+
+    for (const filePath of this.engine.index.filePaths) {
+      const folder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(filePath));
+      const label = folder ? `${folder.name}  (${folder.uri.fsPath})` : '(outside workspace)';
+      let bucket = buckets.get(label);
+      if (!bucket) {
+        bucket = { files: new Set(), selectors: 0 };
+        buckets.set(label, bucket);
+      }
+      bucket.files.add(filePath);
+      bucket.selectors += this.engine.index.entriesForFile(filePath).length;
+    }
+
+    return [...buckets.entries()]
+      .map(([label, bucket]) => ({ label, files: bucket.files.size, selectors: bucket.selectors }))
+      .sort((a, b) => b.selectors - a.selectors);
+  }
+
   refreshConfig(): void {
     this.config = readConfig();
   }

@@ -279,7 +279,16 @@ await second;
 // `detail` (which VS Code only renders on modal dialogs and otherwise drops).
 log.length = 0;
 await registeredCommands.get('styleseek.showIndexStatus')();
-for (const field of ['State', 'Files indexed', 'Selectors found', 'Parse errors', 'Last full index']) {
+const statusFields = [
+  'State',
+  'Files indexed',
+  'Selectors found',
+  'Parse errors',
+  'Last full index',
+  'Workspace folders',
+  'fixture',
+];
+for (const field of statusFields) {
   assert.ok(
     log.some((line) => line.includes(field)),
     `index status must report "${field}", log was ${JSON.stringify(log)}`,

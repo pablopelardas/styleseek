@@ -25,6 +25,17 @@ export async function showIndexStatusCommand(
   output.appendLine(`  Parse errors     ${errors}`);
   output.appendLine(`  Last full index  ${lastRunMs !== undefined ? `${lastRunMs} ms` : 'never'}`);
 
+  const breakdown = indexer.folderBreakdown;
+  if (breakdown.length > 0) {
+    output.appendLine('');
+    output.appendLine('Workspace folders');
+    for (const folder of breakdown) {
+      output.appendLine(
+        `  ${folder.label} — ${folder.files} files, ${folder.selectors} selectors`,
+      );
+    }
+  }
+
   if (errors > 0) {
     output.appendLine('');
     output.appendLine(`Parse errors (${errors}) — these files contribute no selectors:`);
