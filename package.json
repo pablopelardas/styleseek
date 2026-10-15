@@ -152,7 +152,7 @@
     "lint": "eslint src tests",
     "test": "vitest run",
     "test:watch": "vitest",
-    "package": "vsce package --no-dependencies --allow-missing-repository -o styleseek.vsix",
+    "package": "vsce package --no-dependencies -o styleseek.vsix",
     "smoke": "npm run build && node scripts/smoke.mjs",
     "verify": "npm run check-types && npm run lint && npm test && npm run smoke"
   },
@@ -172,5 +172,13 @@
     "eslint": "^9.20.0",
     "typescript": "^5.7.3",
     "vitest": "^3.0.5"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pablopelardas/styleseek.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pablopelardas/styleseek/issues"
+  },
+  "homepage": "https://github.com/pablopelardas/styleseek#readme"
 }
