@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
 - README now links to the published Marketplace listing, with live version and
   install-count badges.
