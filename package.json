@@ -2,10 +2,14 @@
   "name": "styleseek",
   "displayName": "StyleSeek",
   "description": "Smart CSS/SCSS selector search. Finds nested BEM selectors that do not exist literally in your source.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "local-dev",
   "license": "MIT",
-  "private": true,
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#1E40AF",
+    "theme": "dark"
+  },
   "engines": {
     "vscode": "^1.85.0",
     "node": ">=18"
@@ -145,7 +149,7 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run check-types && npm run build",
+    "vscode:prepublish": "npm run check-types && npm run lint && npm test && npm run build",
     "build": "node esbuild.mjs --production",
     "watch": "node esbuild.mjs --watch",
     "check-types": "tsc --noEmit",
@@ -154,7 +158,8 @@
     "test:watch": "vitest",
     "package": "vsce package --no-dependencies -o styleseek.vsix",
     "smoke": "npm run build && node scripts/smoke.mjs",
-    "verify": "npm run check-types && npm run lint && npm test && npm run smoke"
+    "verify": "npm run check-types && npm run lint && npm test && npm run smoke",
+    "generate-icon": "node scripts/generate-icon.mjs"
   },
   "dependencies": {
     "@vue/compiler-sfc": "^3.5.13",

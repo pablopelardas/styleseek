@@ -1,7 +1,18 @@
-# StyleSeek — Smart CSS Selector Search
+<div align="center">
 
-Find any CSS/SCSS selector in your project, **even when its full name never
-appears literally in the source**.
+<img src="media/icon.png" width="112" alt="StyleSeek" />
+
+# StyleSeek
+
+**Find any CSS/SCSS selector — even when its full name never appears in your source.**
+
+[![CI](https://github.com/pablopelardas/styleseek/actions/workflows/ci.yml/badge.svg)](https://github.com/pablopelardas/styleseek/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![VS Code](https://img.shields.io/badge/VS%20Code-%5E1.85.0-007ACC?logo=visualstudiocode&logoColor=white)](https://code.visualstudio.com/)
+
+</div>
+
+---
 
 ## The problem
 
@@ -21,12 +32,12 @@ With BEM and Sass nesting, this is what you write:
 
 …and this is what the browser shows you: `.org-tree__controls-button`.
 
-Hit `Ctrl+Shift+F`, paste that class, and VS Code finds **nothing** — the file
-only contains `&-button`. You end up searching `.org-tree`, opening the file,
-and walking the nesting by eye.
+Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>, paste that class, and VS Code
+finds **nothing** — the file only contains `&-button`. So you search `.org-tree`,
+open the file, and walk the nesting by eye.
 
-StyleSeek reconstructs the full selector *before* indexing it, so the above
-file is searchable as:
+StyleSeek reconstructs the full selector *before* indexing it. That same file
+becomes searchable as:
 
 ```text
 .org-tree
@@ -35,9 +46,9 @@ file is searchable as:
 .org-tree__controls-button
 ```
 
-Each one remembers the exact file, line and column of **its own**
-declaration — searching `.org-tree__controls-button` jumps to `&-button`, not
-to the `.org-tree` block that contains it.
+Each entry remembers the exact file, line and column of **its own**
+declaration. Searching `.org-tree__controls-button` jumps to `&-button` — not
+to the `.org-tree` block that happens to contain it.
 
 ## Search examples
 
@@ -54,7 +65,8 @@ to the `.org-tree` block that contains it.
 Search is case-insensitive, results keep their original casing, and ranking
 **orders** matches — it never discards a valid one.
 
-### Ranking order
+<details>
+<summary><strong>Ranking order</strong></summary>
 
 1. Exact selector match
 2. Exact match ignoring the optional leading `.`
@@ -66,45 +78,54 @@ Search is case-insensitive, results keep their original casing, and ranking
 Ties break on: active file first, then shorter selector, then a stable
 alphabetical order so results never jump around while you type.
 
+</details>
+
 ## Commands
 
 | Command | Default keybinding | What it does |
 | --- | --- | --- |
-| `StyleSeek: Search Selector` | `Ctrl+Alt+F` / `Cmd+Alt+F` | Opens the global selector search |
-| `StyleSeek: Find Selected Selector` | `Ctrl+Alt+S` / `Cmd+Alt+S` | Opens the search pre-filled with the selection, or the class under the cursor |
+| `StyleSeek: Search Selector` | <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> | Opens the global selector search |
+| `StyleSeek: Find Selected Selector` | <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd> | Opens the search pre-filled with the selection, or the class under the cursor |
 | `StyleSeek: Go to Definition` | — | Jumps from a class used in a template to its declaration; asks when several match |
 | `StyleSeek: Rebuild Index` | — | Re-parses the whole workspace |
-| `StyleSeek: Show Index Status` | — | Files indexed, selectors found, parse errors, timing |
+| `StyleSeek: Show Index Status` | — | Files indexed, selectors found, parse errors, timings, per-folder breakdown |
+
+On macOS, <kbd>Cmd</kbd> replaces <kbd>Ctrl</kbd>.
 
 `Find Selected Selector` works from HTML, Vue, JSX, TSX, CSS and SCSS — it
 reads the text, not the language server, and it does **not** stop at hyphens
 the way VS Code's default word definition does.
 
-### Changing a keybinding
+<details>
+<summary><strong>Changing a keybinding</strong></summary>
 
-Both defaults are free in a stock VS Code install, but extensions may claim
-them. Open **Keyboard Shortcuts** (`Ctrl+K Ctrl+S`), search `styleseek`, and
-rebind. Or in `keybindings.json`:
+Both defaults are free in a stock VS Code install, but other extensions may
+claim them. Open **Keyboard Shortcuts** (<kbd>Ctrl</kbd>+<kbd>K</kbd>
+<kbd>Ctrl</kbd>+<kbd>S</kbd>), search `styleseek`, and rebind. Or in
+`keybindings.json`:
 
 ```json
 { "key": "ctrl+shift+alt+f", "command": "styleseek.searchSelector" }
 ```
 
-`Go to Definition` is intentionally **not** bound to `F12`. That key belongs
-to the language servers, and hijacking it to guess at CSS would get in your
-way. Bind `styleseek.goToDefinition` yourself if you want it.
+`Go to Definition` is intentionally **not** bound to <kbd>F12</kbd>. That key
+belongs to the language servers, and hijacking it to guess at CSS would get in
+your way. Bind `styleseek.goToDefinition` yourself if you want it.
+
+</details>
 
 ## Supported files
 
-- `.scss` — full Sass nesting
-- `.css` — including native CSS nesting
-- `.vue` — every `<style>` block, `scoped` or not, extracted with
+- **`.scss`** — full Sass nesting
+- **`.css`** — including native CSS nesting
+- **`.vue`** — every `<style>` block, `scoped` or not, extracted with
   `@vue/compiler-sfc` so positions point at the real line of the `.vue` file
 
 `<style src="./styles.scss">` is followed: the referenced file is indexed once,
 without duplicating its selectors into the component.
 
-### What is understood
+<details>
+<summary><strong>What is understood</strong></summary>
 
 - Unlimited nesting depth (`.a { &__b { &--active { &-icon { … } } } }`)
 - Descendant selectors — `.container { .button { } }` becomes
@@ -121,14 +142,15 @@ without duplicating its selectors into the component.
   the nesting context
 - `@at-root` resolves against the document root
 
+</details>
+
 ### Deliberate limitations
 
 These are decisions, not omissions:
 
-- **No Sass compiler.** `#{$prefix}` is kept literally, so
-  `.#{$prefix}-button` is indexed under that exact name and flagged
-  internally. It is still findable by its static parts (`-button`), and
-  StyleSeek never invents a resolved name it cannot prove.
+- **No Sass compiler.** `#{$prefix}` is kept literally, so `.#{$prefix}-button`
+  is indexed under that exact name. It stays findable by its static parts
+  (`-button`), and StyleSeek never invents a resolved name it cannot prove.
 - **`@mixin` / `@function` bodies.** A `&` inside a mixin has no statically
   known parent, so those selectors are skipped rather than guessed. Plain
   selectors inside a mixin are still indexed.
@@ -136,9 +158,8 @@ These are decisions, not omissions:
   indexed.
 - **A file with a syntax error** is reported in `Show Index Status` and
   contributes no selectors; the rest of the index is unaffected.
-- **`.sass` (indented), `.less` and `.styl`** are not supported. The
-  architecture has one dispatch point (`src/parsers/index.ts`) if you want to
-  add one.
+- **`.sass` (indented), `.less` and `.styl`** are not supported. There is a
+  single dispatch point (`src/parsers/index.ts`) if you want to add one.
 
 ## Configuration
 
@@ -184,6 +205,9 @@ After that, updates are incremental:
 - A slow parse can never overwrite a newer one, and a superseded full rebuild
   publishes nothing
 
+Measured on a real 104-file Vue 3 + SCSS project: **1006 selectors in 283 ms**
+(165 ms discovery, 118 ms parsing), zero parse errors.
+
 ## Privacy and security
 
 StyleSeek is fully local and does exactly nothing else:
@@ -196,87 +220,31 @@ StyleSeek is fully local and does exactly nothing else:
 - Four runtime dependencies, all widely used: `postcss`, `postcss-scss`,
   `postcss-selector-parser`, `@vue/compiler-sfc`
 
-## Try it
+## Installation
 
-A playground workspace with every supported and every deliberately-unsupported
-case lives in [`examples/playground`](examples/playground). Open it as its own
-window and work through its checklist:
-
-```bash
-code examples/playground
-```
-
-Its README states exactly what each search must return; `tests/playground.test.ts`
-asserts the same things against the real parsers, so the documentation cannot
-drift from the behaviour.
-
-## Development
-
-```bash
-npm install
-npm run verify      # types + lint + unit tests + bundle smoke test
-```
-
-Individually:
-
-```bash
-npm run check-types # tsc --noEmit
-npm run lint        # eslint
-npm test            # vitest
-npm run build       # esbuild bundle into dist/
-npm run smoke       # builds, then drives the bundle against a vscode stub
-```
-
-Press **F5** in VS Code to launch the Extension Development Host (it starts
-`npm run watch` for you).
-
-### Architecture
-
-```text
-src/
-  extension.ts            activation and command wiring
-  config.ts               settings, validation, glob merging
-  commands/               one file per command
-  parsers/
-    selectorResolver.ts   & resolution, selector-list splitting  <- the core
-    styleBlockParser.ts   PostCSS AST walk, context stack, positions
-    scssParser.ts  cssParser.ts  vueParser.ts  position.ts
-  indexing/
-    indexEngine.ts        parse orchestration, versioning, cancellation
-    selectorIndex.ts      in-memory store, per-file slices
-    workspaceIndexer.ts   the only VS Code-aware indexing code
-    fileWatcher.ts        watchers, debouncing, event coalescing
-  search/
-    fuzzyMatcher.ts  ranking.ts  selectorSearch.ts
-  ui/
-    selectorQuickPick.ts  navigation.ts
-```
-
-`parsers/`, `search/`, `indexing/indexEngine.ts` and `indexing/selectorIndex.ts`
-import **no** `vscode` — which is why they are covered by fast unit tests
-instead of an Extension Host harness.
-
-Selector reconstruction is AST-based, never regex-driven. A hand-written
-scanner exists only as a fallback for Sass syntax that
-`postcss-selector-parser` cannot read.
-
-## Packaging
-
-```bash
-npm run package     # -> styleseek.vsix
-```
-
-Install it:
+From the Marketplace once published, or from a `.vsix`:
 
 ```bash
 code --install-extension styleseek.vsix
 ```
 
-Or in VS Code: **Extensions** → `…` menu → **Install from VSIX…**
+Every CI run attaches a built `.vsix` as an artifact, so you can grab one from
+the [Actions tab](https://github.com/pablopelardas/styleseek/actions) without
+building anything.
 
-The manifest uses the placeholder publisher `local-dev`. Replace it with your
-own before publishing anywhere; StyleSeek is not published to the Marketplace.
+## Contributing
+
+Bug reports with the SCSS that reproduces them are the single most useful
+thing you can send. See [CONTRIBUTING.md](CONTRIBUTING.md) for the setup, the
+architecture and how the tests are organised.
+
+```bash
+npm install
+npm run verify   # types + lint + unit tests + bundle smoke test
+```
+
+Press <kbd>F5</kbd> to launch the Extension Development Host.
 
 ## License
 
-MIT.
+[MIT](LICENSE).

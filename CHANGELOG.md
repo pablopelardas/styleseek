@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1
+
+- Marketplace icon, generated reproducibly by `npm run generate-icon`.
+- Rewritten README with badges, and a CONTRIBUTING guide covering the
+  architecture, the no-`vscode`-in-the-core rule and how the tests are split.
+- Manifest metadata for publishing: `icon`, `galleryBanner`, and the `private`
+  flag dropped now that this is a public MIT project.
+
 ## 0.2.0
 
 ### Fixed

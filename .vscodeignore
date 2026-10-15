@@ -4,6 +4,7 @@ src/**
 tests/**
 scripts/**
 examples/**
+CONTRIBUTING.md
 node_modules/**
 out/**
 .gitignore
