@@ -286,6 +286,8 @@ const statusFields = [
   'Parse errors',
   'Last full index',
   'Workspace folders',
+  'discovery',
+  'parsing',
   'fixture',
 ];
 for (const field of statusFields) {

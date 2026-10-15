@@ -12,6 +12,8 @@ export interface IndexStatus {
   readonly selectors: number;
   readonly errors: number;
   readonly lastRunMs?: number;
+  readonly discoveryMs?: number;
+  readonly parseMs?: number;
 }
 
 /**
@@ -47,6 +49,8 @@ export class WorkspaceIndexer implements vscode.Disposable, IndexEngineHost {
       selectors: stats.selectors,
       errors: stats.errors,
       lastRunMs: this.lastRunMs,
+      discoveryMs: this.engine.timings?.discoveryMs,
+      parseMs: this.engine.timings?.parseMs,
     };
   }
 
@@ -141,20 +145,27 @@ export class WorkspaceIndexer implements vscode.Disposable, IndexEngineHost {
 
   // ---- IndexEngineHost -------------------------------------------------
 
+  /**
+   * Resolves the include globs.
+   *
+   * Every glob is a full workspace walk, so running them one after another
+   * multiplied the cold-cache cost by the number of patterns. They are
+   * independent — run them together and let VS Code schedule the IO.
+   */
   async listFiles(): Promise<string[]> {
     const folders = vscode.workspace.workspaceFolders ?? [];
     const exclude = buildExcludeGlob(this.config);
-    const found = new Set<string>();
 
-    for (const folder of folders) {
-      for (const include of this.config.include) {
-        const uris = await vscode.workspace.findFiles(
-          new vscode.RelativePattern(folder, include),
-          exclude,
-        );
-        for (const uri of uris) {
-          found.add(uri.fsPath);
-        }
+    const searches = folders.flatMap((folder) =>
+      this.config.include.map((include) =>
+        vscode.workspace.findFiles(new vscode.RelativePattern(folder, include), exclude),
+      ),
+    );
+
+    const found = new Set<string>();
+    for (const uris of await Promise.all(searches)) {
+      for (const uri of uris) {
+        found.add(uri.fsPath);
       }
     }
     return [...found];

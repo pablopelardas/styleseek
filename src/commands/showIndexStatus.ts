@@ -14,7 +14,7 @@ export async function showIndexStatusCommand(
   indexer: WorkspaceIndexer,
   output: vscode.OutputChannel,
 ): Promise<void> {
-  const { state, files, selectors, errors, lastRunMs } = indexer.status;
+  const { state, files, selectors, errors, lastRunMs, discoveryMs, parseMs } = indexer.status;
 
   output.clear();
   output.appendLine(`StyleSeek index status — ${new Date().toLocaleString()}`);
@@ -24,6 +24,10 @@ export async function showIndexStatusCommand(
   output.appendLine(`  Selectors found  ${selectors}`);
   output.appendLine(`  Parse errors     ${errors}`);
   output.appendLine(`  Last full index  ${lastRunMs !== undefined ? `${lastRunMs} ms` : 'never'}`);
+  if (discoveryMs !== undefined && parseMs !== undefined) {
+    output.appendLine(`    discovery      ${discoveryMs} ms  (resolving include/exclude globs)`);
+    output.appendLine(`    parsing        ${parseMs} ms  (reading and parsing ${files} files)`);
+  }
 
   const breakdown = indexer.folderBreakdown;
   if (breakdown.length > 0) {

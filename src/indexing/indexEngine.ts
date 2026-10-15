@@ -16,6 +16,13 @@ export interface IndexEngineHost {
   onProgress?(done: number, total: number): void;
 }
 
+export interface RebuildTimings {
+  /** Time spent resolving the include/exclude globs across the workspace. */
+  readonly discoveryMs: number;
+  /** Time spent reading and parsing the discovered files. */
+  readonly parseMs: number;
+}
+
 export type IndexState = 'idle' | 'indexing' | 'ready';
 
 const BATCH_SIZE = 24;
@@ -33,6 +40,7 @@ export class IndexEngine {
   private state: IndexState = 'idle';
   private sequence = new Map<string, number>();
   private generation = 0;
+  private lastTimings: RebuildTimings | undefined;
 
   constructor(private readonly host: IndexEngineHost) {}
 
@@ -44,21 +52,34 @@ export class IndexEngine {
     return this.state === 'ready';
   }
 
+  /**
+   * Where the time went on the last full rebuild.
+   *
+   * Split on purpose: "indexing is slow" is unactionable, "discovery took
+   * 6 s and parsing took 0.3 s" points straight at the glob walk.
+   */
+  get timings(): RebuildTimings | undefined {
+    return this.lastTimings;
+  }
+
   /** Full rebuild. Safe to call concurrently: the newest call wins. */
   async rebuild(token?: CancellationLike): Promise<void> {
     const generation = ++this.generation;
     this.state = 'indexing';
 
+    const discoveryStart = Date.now();
     let files: string[];
     try {
       files = (await this.host.listFiles()).filter(isSupportedFile);
     } catch {
       files = [];
     }
+    const discoveryMs = Date.now() - discoveryStart;
     if (this.isStale(generation, token)) {
       return;
     }
 
+    const parseStart = Date.now();
     const fresh = new SelectorIndex();
     const external = new Set<string>();
 
@@ -88,6 +109,7 @@ export class IndexEngine {
 
     this.index.replaceWith(fresh);
     this.sequence.clear();
+    this.lastTimings = { discoveryMs, parseMs: Date.now() - parseStart };
     this.state = 'ready';
   }
 
