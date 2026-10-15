@@ -6,9 +6,12 @@
 
 **Find any CSS/SCSS selector — even when its full name never appears in your source.**
 
+[![Marketplace](https://vsmarketplacebadges.dev/version-short/webboost.styleseek.svg?style=flat-square&color=007ACC)](https://marketplace.visualstudio.com/items?itemName=webboost.styleseek)
+[![Installs](https://vsmarketplacebadges.dev/installs-short/webboost.styleseek.svg?style=flat-square&color=007ACC)](https://marketplace.visualstudio.com/items?itemName=webboost.styleseek)
 [![CI](https://github.com/pablopelardas/styleseek/actions/workflows/ci.yml/badge.svg)](https://github.com/pablopelardas/styleseek/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![VS Code](https://img.shields.io/badge/VS%20Code-%5E1.85.0-007ACC?logo=visualstudiocode&logoColor=white)](https://code.visualstudio.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+
+**[Install from the Visual Studio Marketplace →](https://marketplace.visualstudio.com/items?itemName=webboost.styleseek)**
 
 </div>
 
@@ -222,15 +225,23 @@ StyleSeek is fully local and does exactly nothing else:
 
 ## Installation
 
-From the Marketplace once published, or from a `.vsix`:
+**[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=webboost.styleseek)**
+— or from inside VS Code, press <kbd>Ctrl</kbd>+<kbd>P</kbd> and run:
 
-```bash
-code --install-extension styleseek.vsix
+```text
+ext install webboost.styleseek
 ```
 
-Every CI run attaches a built `.vsix` as an artifact, so you can grab one from
-the [Actions tab](https://github.com/pablopelardas/styleseek/actions) without
-building anything.
+From the command line:
+
+```bash
+code --install-extension webboost.styleseek
+```
+
+Prefer to build it yourself? Every CI run attaches a `.vsix` artifact, and
+every release has one attached too — see the
+[Releases](https://github.com/pablopelardas/styleseek/releases) and
+[Actions](https://github.com/pablopelardas/styleseek/actions) tabs.
 
 ## Contributing
 

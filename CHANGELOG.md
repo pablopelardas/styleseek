@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- README now links to the published Marketplace listing, with live version and
+  install-count badges.
+- Release workflow: pushing a `v*` tag runs the full gate, attaches the built
+  VSIX to a GitHub release and publishes that same artifact to the
+  Marketplace. It refuses to run when the tag and `package.json` disagree.
+
 ## 0.2.1
 
 - Marketplace icon, generated reproducibly by `npm run generate-icon`.
